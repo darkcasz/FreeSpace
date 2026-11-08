@@ -1,0 +1,29 @@
+name: Publicar Windows
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: write
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Verificar versión de la etiqueta
+        shell: pwsh
+        run: |
+          $version = node -p "require('./package.json').version"
+          if ($env:GITHUB_REF_NAME -ne "v$version") { throw 'La etiqueta debe coincidir con package.json' }
+      - run: npm install
+      - run: npm run check
+      - run: npm test
+      - run: npm run dist:win -- --publish never
+      - run: npm run publish:updates
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

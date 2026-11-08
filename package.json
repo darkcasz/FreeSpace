@@ -1,0 +1,65 @@
+{
+  "name": "freespace",
+  "version": "0.3.0",
+  "private": true,
+  "description": "Analizador de espacio en disco para Windows",
+  "author": "FreeSpace",
+  "main": "dist/main.cjs",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "start": "npm run build && electron .",
+    "check": "tsc --noEmit",
+    "test": "node --experimental-strip-types --test tests/*.test.ts",
+    "dist:win": "npm run build && electron-builder --win nsis --x64",
+    "publish:updates": "node scripts/publish-github.mjs"
+  },
+  "devDependencies": {
+    "electron": "45.1.0",
+    "electron-builder": "26.18.0",
+    "esbuild": "^0.25.0",
+    "typescript": "^5.9.0",
+    "@types/node": "^24.0.0",
+    "electron-updater": "6.8.11"
+  },
+  "build": {
+    "appId": "com.freespace.desktop",
+    "productName": "FreeSpace",
+    "files": [
+      "dist/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "win": {
+      "target": "nsis",
+      "signAndEditExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "artifactName": "FreeSpace-${version}-Windows-x64-Setup.${ext}",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "FreeSpace",
+      "runAfterFinish": true,
+      "installerLanguages": [
+        "es_ES"
+      ],
+      "language": "3082"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "darkcasz",
+        "repo": "FreeSpace",
+        "releaseType": "release"
+      }
+    ]
+  },
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/darkcasz/FreeSpace.git"
+  }
+}
