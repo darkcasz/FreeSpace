@@ -4,7 +4,7 @@ Aplicación de escritorio en español para analizar discos y liberar espacio en 
 
 ## Instalación
 
-Instala `FreeSpace-0.3.0-Windows-x64-Setup.exe` desde GitHub Releases, cuando la publicación esté disponible. No necesitas Node.js ni comandos en el equipo de destino.
+Instala `FreeSpace-0.3.1-Windows-x64-Setup.exe` desde GitHub Releases, cuando la publicación esté disponible. No necesitas Node.js ni comandos en el equipo de destino.
 
 Las versiones 0.1 y 0.2 deben actualizarse una vez mediante este instalador para incorporar el actualizador.
 
@@ -79,3 +79,16 @@ La interfaz usa aislamiento de contexto, sandbox y contenido local siguiendo la 
 Once pruebas cubren el escaneo, enlaces y ciclos, cancelación, comandos de mantenimiento, códigos de salida y el ciclo de actualización con un proveedor simulado. Pasaron la revisión TypeScript y la compilación. Los instaladores anteriores se probaron en Windows por el usuario. La descarga e instalación real entre dos versiones y las acciones de mantenimiento de la versión actual requieren validación en Windows.
 
 En este entorno macOS se utilizaron dependencias y distribuciones de Electron disponibles localmente, porque npm no tiene conexión al registro en el entorno de ejecución. Estos enlaces de `node_modules` no se incluyen en el repositorio ni en el instalador; las dependencias necesarias se empaquetan en `dist/main.cjs`.
+
+
+## Corrección 0.3.1 del instalador
+
+Se sustituyó la detección de procesos por prefijo de carpeta de electron-builder por `nsProcess::_FindProcess` con el nombre exacto `FreeSpace.exe`. El instalador y el desinstalador dejan de considerar otros ejecutables de la carpeta, incluidos los propios asistentes, como si fueran la aplicación.
+
+El modo silencioso espera hasta diez segundos el cierre de FreeSpace; si sigue activo o la enumeración falla, se detiene sin matar procesos. El modo interactivo solicita autorización antes de intentar cerrar procesos con ese nombre. El código 603 del plugin significa que no hay coincidencias; otros errores no se interpretan como ausencia.
+
+La actualización ejecuta normalmente el desinstalador que ya estaba instalado. Por eso, antes de esa fase, el instalador 0.3.1 sustituye el desinstalador de las versiones 0.1.0, 0.2.0 y 0.3.0 por el corregido. Solo considera ubicaciones y versiones registradas bajo el GUID propio de FreeSpace y con ambos ejecutables presentes. No modifica otras aplicaciones ni claves ajenas. Cierra cualquier asistente anterior antes de ejecutar el nuevo instalador.
+
+La ventana de FreeSpace ahora se crea antes de inicializar el actualizador. Si falla la carga de la interfaz, se muestra el error y la aplicación termina, en lugar de continuar sin ventana.
+
+Se verificó la compilación de ambos programas NSIS (instalador y desinstalador), además de los tipos y las once pruebas existentes. La resolución del bloqueo reportado y la migración desde 0.3.0 deben confirmarse en Windows; no se reprodujo el equipo afectado desde macOS.

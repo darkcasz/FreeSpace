@@ -1,6 +1,6 @@
 {
   "name": "freespace",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "private": true,
   "description": "Analizador de espacio en disco para Windows",
   "author": "FreeSpace",
@@ -46,7 +46,8 @@
       "installerLanguages": [
         "es_ES"
       ],
-      "language": "3082"
+      "language": "3082",
+      "include": "build/installer.nsh"
     },
     "publish": [
       {

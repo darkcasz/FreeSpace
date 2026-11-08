@@ -26,7 +26,7 @@ if (process.argv.includes('--bootstrap')) {
   }
   if (existing?.isPrivate) throw Error('El repositorio es privado. No se cambiará su visibilidad; el actualizador necesita un repositorio público.');
   const snapshot = mkdtempSync(join(tmpdir(), 'freespace-publish-'));
-  for (const file of ['src', 'tests', 'scripts', 'package.json', 'tsconfig.json', '.gitignore', 'README.md', 'RELEASE_NOTES.md']) {
+  for (const file of ['src', 'tests', 'scripts', 'build', 'package.json', 'tsconfig.json', '.gitignore', 'README.md', 'RELEASE_NOTES.md']) {
     cpSync(file, join(snapshot, file), { recursive: true });
   }
   const git = (...args) => execFileSync('git', args, { cwd: snapshot, stdio: 'inherit' });
@@ -36,6 +36,18 @@ if (process.argv.includes('--bootstrap')) {
   git('remote', 'add', 'origin', `https://github.com/${repository}.git`);
   git('-c', 'credential.helper=!gh auth git-credential', 'push', 'origin', 'main');
   console.log(`Copia Git de publicación: ${snapshot}`);
+}
+if (process.argv.includes('--sync-source')) {
+  const snapshot = mkdtempSync(join(tmpdir(), 'freespace-publish-'));
+  const git = (...args) => execFileSync('git', args, { cwd: snapshot, stdio: 'inherit' });
+  git('-c', 'credential.helper=!gh auth git-credential', 'clone', '--depth', '1', `https://github.com/${repository}.git`, '.');
+  for (const file of ['src', 'tests', 'scripts', 'build', 'package.json', 'tsconfig.json', '.gitignore', 'README.md', 'RELEASE_NOTES.md']) {
+    cpSync(file, join(snapshot, file), { recursive: true });
+  }
+  git('add', '.');
+  git('-c', 'user.name=FreeSpace', '-c', `user.email=${owner}@users.noreply.github.com`, 'commit', '-m', `FreeSpace ${pkg.version}: corregir instalación y desinstalación`);
+  git('-c', 'credential.helper=!gh auth git-credential', 'push', 'origin', 'main');
+  console.log(`Código fuente sincronizado en ${snapshot}`);
 }
 // Create a draft first: clients never see latest.yml without the matching installer.
 gh('release', 'create', tag, '--repo', repository, '--target', 'main', '--draft', '--title', `FreeSpace ${pkg.version}`, '--notes-file', 'RELEASE_NOTES.md');

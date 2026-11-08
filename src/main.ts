@@ -12,9 +12,9 @@ let cancelFlag: Int32Array | null = null;
 const allowed = new Set<string>();
 let maintenanceBusy = false;
 let updates: Updates | null = null;
-ipcMain.handle('update-state', () => updates?.snapshot());
-ipcMain.handle('update-check', () => updates?.check());
-ipcMain.handle('update-install', () => updates?.install());
+ipcMain.handle('update-state', () => updates?.snapshot() ?? { phase: 'disabled', currentVersion: app.getVersion(), message: 'No se pudo iniciar el actualizador. Puedes seguir usando FreeSpace.' });
+ipcMain.handle('update-check', () => { if (!updates) throw new Error('El actualizador no está disponible. Reinicia FreeSpace.'); return updates.check(); });
+ipcMain.handle('update-install', () => { if (!updates) throw new Error('El actualizador no está disponible.'); return updates.install(); });
 ipcMain.handle('maintenance-available', () => process.platform === 'win32');
 ipcMain.handle('maintenance', async (_event, action: unknown) => {
   maintenanceScript(action); // Validate before showing dialogs or invoking processes.
@@ -71,7 +71,11 @@ function createWindow() {
   window.setMenuBarVisibility(false);
   window.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   window.webContents.on('will-navigate', event => event.preventDefault());
-  void window.loadFile(join(__dirname, 'index.html'));
+  void window.loadFile(join(__dirname, 'index.html')).catch(error => {
+    console.error('No se pudo cargar la interfaz', error);
+    dialog.showErrorBox('FreeSpace no pudo abrirse', 'Vuelve a instalar FreeSpace para restaurar sus archivos. La aplicación se cerrará.');
+    app.quit();
+  });
   window.on('close', event => {
     if (maintenanceBusy) {
       event.preventDefault();
@@ -83,14 +87,18 @@ function createWindow() {
 const primary = app.requestSingleInstanceLock();
 if (!primary) app.quit();
 else {
-  app.on('second-instance', () => { if (window) { if (window.isMinimized()) window.restore(); window.focus(); } });
+  app.on('second-instance', () => { if (!window || window.isDestroyed()) createWindow(); else { if (window.isMinimized()) window.restore(); window.show(); window.focus(); } });
   void app.whenReady().then(() => {
-    const enabled = app.isPackaged && process.platform === 'win32';
-    updates = new Updates(autoUpdater, app.getVersion(), enabled,
-      state => { if (window && !window.isDestroyed()) window.webContents.send('update-state', state); },
-      () => !!worker || maintenanceBusy);
     createWindow();
-    if (enabled) {
+    const enabled = app.isPackaged && process.platform === 'win32';
+    try {
+      updates = new Updates(autoUpdater, app.getVersion(), enabled,
+        state => { if (window && !window.isDestroyed()) window.webContents.send('update-state', state); },
+        () => !!worker || maintenanceBusy);
+    } catch (error) {
+      console.error('No se pudo iniciar el actualizador', error);
+    }
+    if (enabled && updates) {
       setTimeout(() => { void updates!.check(); }, 8000).unref();
       setInterval(() => { void updates!.check(); }, 4 * 60 * 60 * 1000).unref();
     }
