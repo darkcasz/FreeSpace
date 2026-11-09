@@ -16,7 +16,7 @@ for (const action of maintenanceActions) el(action).onclick = async () => {
   el('maintenance-status').dataset.state = '';
   text('maintenance-status', action === 'clean-temporary'
     ? 'Abriendo el Liberador de espacio. Selecciona las categorías y confirma la eliminación en la ventana de Windows; cierra esa ventana para volver.'
-    : 'Esperando la autorización y el mantenimiento de Windows. No cierres la ventana durante DISM. Al terminar, presiona Entrar en esa ventana para volver a FreeSpace.');
+    : 'Esperando la autorización y el mantenimiento de Windows. No cierres la ventana durante DISM. Al terminar, presiona Entrar en esa ventana para volver a CertaFreeSpace.');
   try {
     const response = await window.freeSpace.maintenance(action);
     el('maintenance-status').dataset.state = response.status;

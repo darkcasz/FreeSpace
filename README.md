@@ -1,10 +1,12 @@
-# FreeSpace
+# CertaFreeSpace
+
+Producto de **CertaSoft**, antes FreeSpace.
 
 Aplicación de escritorio en español para analizar discos y liberar espacio en Windows x64.
 
 ## Instalación
 
-Instala `FreeSpace-0.3.2-Windows-x64-Setup.exe` desde GitHub Releases, cuando la publicación esté disponible. No necesitas Node.js ni comandos en el equipo de destino.
+Instala `CertaFreeSpace-0.4.0-Windows-x64-Setup.exe` desde GitHub Releases, cuando la publicación esté disponible. No necesitas Node.js ni comandos en el equipo de destino.
 
 Las versiones 0.1 y 0.2 deben actualizarse una vez mediante este instalador para incorporar el actualizador.
 
@@ -37,7 +39,7 @@ La versión instalada para Windows consulta GitHub Releases al iniciar (después
 
 Las nuevas versiones estables se descargan en segundo plano. Una actualización verificada se instala al cerrar FreeSpace o con **Reiniciar e instalar**. Ese botón espera a que terminen el análisis y el mantenimiento. Solo se permite una instancia de FreeSpace. Los errores de conexión no impiden analizar ni limpiar; se puede reintentar. No se permiten degradaciones ni versiones preliminares.
 
-El instalador incluye `app-update.yml`. Las publicaciones deben contener el instalador `FreeSpace-<version>-Windows-x64-Setup.exe` y su `latest.yml` correspondiente. A partir de 0.3.2 las actualizaciones descargan el instalador completo; las versiones anteriores también publicaban `.blockmap`. La aplicación conserva la descarga e instalación automática y verifica el SHA-512 del archivo.
+El instalador incluye `app-update.yml`. Las publicaciones deben contener el instalador `CertaFreeSpace-<version>-Windows-x64-Setup.exe` y su `latest.yml` correspondiente. A partir de 0.3.2 las actualizaciones descargan el instalador completo; las versiones anteriores también publicaban `.blockmap`. La aplicación conserva la descarga e instalación automática y verifica el SHA-512 del archivo.
 
 El cliente no contiene credenciales de GitHub. El repositorio configurado debe ser público para permitir descargas sin iniciar sesión. Esta versión no configura firma digital de Windows.
 
@@ -101,3 +103,12 @@ El cambio se aplica sobre una copia local de las plantillas de electron-builder 
 Se genera un registro en `%TEMP%\FreeSpace-install.log` con el inicio, la migración y la finalización. Si hay que ejecutar un desinstalador de otra versión y este falla, el mensaje indica esa etapa y el código de salida. Un problema al extraer el ZIP utiliza el diagnóstico de extracción en lugar del mensaje de cierre. La detección nativa de `FreeSpace.exe` continúa activa.
 
 Se verificaron trece pruebas, tipos, compilación de instalador/desinstalador y la integridad del paquete. La instalación sobre el equipo Windows afectado queda pendiente de confirmación; no se afirma haber reproducido ni confirmado la causa exacta del bloqueo desde macOS.
+
+
+## Identidad CertaSoft — versión 0.4.0
+
+La aplicación adopta el nombre **CertaFreeSpace**, tipografía Sora local, azul tinta `#0F2A4A`, fondo profundo `#0B1F38` y verde lima `#A3E635` sobre oscuro (`#4D7C0F` sobre claro). El símbolo conserva la C de la familia y añade un glifo de capacidad de almacenamiento. Los SVG tienen la tipografía convertida a trazos. Ver [guía de marca](build/brand/MARCA.md).
+
+Se actualizan interfaz, título de ventana, icono de aplicación, asistente, accesos directos, descripción y fabricante de Windows. `productName` es CertaFreeSpace; `executableName` continúa siendo FreeSpace para mantener los nombres internos de aplicación/desinstalador, el GUID y la detección de procesos existentes. El repositorio de actualizaciones también se mantiene. El instalador de esta versión usa el nombre comercial nuevo.
+
+Se conserva la recuperación sobre versiones hasta 0.3.2 en la misma carpeta registrada. El cambio de marca no confirma por sí mismo la resolución del incidente de instalación anterior; falta validar actualización y desinstalación en el equipo afectado.

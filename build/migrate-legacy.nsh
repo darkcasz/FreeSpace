@@ -12,6 +12,7 @@
     ${OrIf} $R2 == "0.2.0"
     ${OrIf} $R2 == "0.3.0"
     ${OrIf} $R2 == "0.3.1"
+    ${OrIf} $R2 == "0.3.2"
       !insertmacro FreeSpaceLog "Recuperacion en sitio de $R2; se omite el desinstalador anterior."
       DetailPrint "Recuperando FreeSpace $R2 sin ejecutar el desinstalador anterior."
       Pop $R4

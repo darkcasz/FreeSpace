@@ -1,9 +1,9 @@
 {
   "name": "freespace",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "private": true,
-  "description": "Analizador de espacio en disco para Windows",
-  "author": "FreeSpace",
+  "description": "CertaFreeSpace \u2014 an\u00e1lisis de almacenamiento y mantenimiento de Windows",
+  "author": "CertaSoft",
   "main": "dist/main.cjs",
   "scripts": {
     "build": "node scripts/build.mjs",
@@ -23,7 +23,7 @@
   },
   "build": {
     "appId": "com.freespace.desktop",
-    "productName": "FreeSpace",
+    "productName": "CertaFreeSpace",
     "files": [
       "dist/**/*",
       "package.json"
@@ -33,15 +33,16 @@
     },
     "win": {
       "target": "nsis",
-      "signAndEditExecutable": false
+      "signExecutable": false,
+      "icon": "build/brand/icon.ico"
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "artifactName": "FreeSpace-${version}-Windows-x64-Setup.${ext}",
+      "artifactName": "CertaFreeSpace-${version}-Windows-x64-Setup.${ext}",
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "FreeSpace",
+      "shortcutName": "CertaFreeSpace",
       "runAfterFinish": true,
       "installerLanguages": [
         "es_ES"
@@ -49,7 +50,10 @@
       "language": "3082",
       "include": "build/installer.nsh",
       "useZip": true,
-      "differentialPackage": false
+      "differentialPackage": false,
+      "installerIcon": "build/brand/icon.ico",
+      "uninstallerIcon": "build/brand/icon.ico",
+      "installerHeaderIcon": "build/brand/icon.ico"
     },
     "publish": [
       {
@@ -58,7 +62,9 @@
         "repo": "FreeSpace",
         "releaseType": "release"
       }
-    ]
+    ],
+    "executableName": "FreeSpace",
+    "copyright": "Copyright \u00a9 2026 CertaSoft"
   },
   "type": "module",
   "repository": {

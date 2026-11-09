@@ -12,8 +12,8 @@ let cancelFlag: Int32Array | null = null;
 const allowed = new Set<string>();
 let maintenanceBusy = false;
 let updates: Updates | null = null;
-ipcMain.handle('update-state', () => updates?.snapshot() ?? { phase: 'disabled', currentVersion: app.getVersion(), message: 'No se pudo iniciar el actualizador. Puedes seguir usando FreeSpace.' });
-ipcMain.handle('update-check', () => { if (!updates) throw new Error('El actualizador no está disponible. Reinicia FreeSpace.'); return updates.check(); });
+ipcMain.handle('update-state', () => updates?.snapshot() ?? { phase: 'disabled', currentVersion: app.getVersion(), message: 'No se pudo iniciar el actualizador. Puedes seguir usando CertaFreeSpace.' });
+ipcMain.handle('update-check', () => { if (!updates) throw new Error('El actualizador no está disponible. Reinicia CertaFreeSpace.'); return updates.check(); });
 ipcMain.handle('update-install', () => { if (!updates) throw new Error('El actualizador no está disponible.'); return updates.install(); });
 ipcMain.handle('maintenance-available', () => process.platform === 'win32');
 ipcMain.handle('maintenance', async (_event, action: unknown) => {
@@ -67,19 +67,19 @@ ipcMain.handle('scan', (_event, path: unknown) => {
   active.on('exit', code => { finish(); if (!completed) send({ type: 'error', message: `El análisis terminó inesperadamente (${code}).` }); });
 });
 function createWindow() {
-  window = new BrowserWindow({ width: 1320, height: 860, minWidth: 960, minHeight: 680, backgroundColor: '#0b1016', title: 'FreeSpace', webPreferences: { preload: join(__dirname, 'preload.cjs'), nodeIntegration: false, contextIsolation: true, sandbox: true } });
+  window = new BrowserWindow({ width: 1320, height: 860, minWidth: 960, minHeight: 680, backgroundColor: '#0B1F38', title: 'CertaFreeSpace', icon: join(__dirname, 'assets', 'certafreespace-icono.png'), webPreferences: { preload: join(__dirname, 'preload.cjs'), nodeIntegration: false, contextIsolation: true, sandbox: true } });
   window.setMenuBarVisibility(false);
   window.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   window.webContents.on('will-navigate', event => event.preventDefault());
   void window.loadFile(join(__dirname, 'index.html')).catch(error => {
     console.error('No se pudo cargar la interfaz', error);
-    dialog.showErrorBox('FreeSpace no pudo abrirse', 'Vuelve a instalar FreeSpace para restaurar sus archivos. La aplicación se cerrará.');
+    dialog.showErrorBox('CertaFreeSpace no pudo abrirse', 'Vuelve a instalar CertaFreeSpace para restaurar sus archivos. La aplicación se cerrará.');
     app.quit();
   });
   window.on('close', event => {
     if (maintenanceBusy) {
       event.preventDefault();
-      void dialog.showMessageBox(window!, { type: 'info', message: 'El mantenimiento sigue en curso.', detail: 'Finaliza la operación en la ventana de Windows y vuelve a FreeSpace antes de cerrar.' });
+      void dialog.showMessageBox(window!, { type: 'info', message: 'El mantenimiento sigue en curso.', detail: 'Finaliza la operación en la ventana de Windows y vuelve a CertaFreeSpace antes de cerrar.' });
     }
   });
   window.on('closed', () => { window = null; void worker?.terminate(); worker = null; cancelFlag = null; });

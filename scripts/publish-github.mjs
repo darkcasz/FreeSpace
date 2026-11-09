@@ -6,7 +6,7 @@ import { execFileSync } from 'node:child_process';
 const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
 const { owner, repo } = pkg.build.publish[0];
 const repository = `${owner}/${repo}`;
-const filename = `FreeSpace-${pkg.version}-Windows-x64-Setup.exe`;
+const filename = `${pkg.build.productName}-${pkg.version}-Windows-x64-Setup.exe`;
 const files = [`release/${filename}`, 'release/latest.yml'];
 if (pkg.build.nsis.differentialPackage !== false) files.splice(1, 0, `release/${filename}.blockmap`);
 for (const file of files) if (!existsSync(file)) throw Error(`Falta ${file}. Genera el instalador antes de publicar.`);
@@ -33,7 +33,7 @@ if (process.argv.includes('--bootstrap')) {
   const git = (...args) => execFileSync('git', args, { cwd: snapshot, stdio: 'inherit' });
   git('init', '-b', 'main');
   git('add', '.');
-  git('-c', 'user.name=FreeSpace', '-c', `user.email=${owner}@users.noreply.github.com`, 'commit', '-m', `FreeSpace ${pkg.version}: actualizaciones automáticas`);
+  git('-c', 'user.name=FreeSpace', '-c', `user.email=${owner}@users.noreply.github.com`, 'commit', '-m', `${pkg.build.productName} ${pkg.version}: actualizaciones automáticas`);
   git('remote', 'add', 'origin', `https://github.com/${repository}.git`);
   git('-c', 'credential.helper=!gh auth git-credential', 'push', 'origin', 'main');
   console.log(`Copia Git de publicación: ${snapshot}`);
@@ -46,12 +46,12 @@ if (process.argv.includes('--sync-source')) {
     cpSync(file, join(snapshot, file), { recursive: true });
   }
   git('add', '.');
-  git('-c', 'user.name=FreeSpace', '-c', `user.email=${owner}@users.noreply.github.com`, 'commit', '-m', `FreeSpace ${pkg.version}: corregir instalación y desinstalación`);
+  git('-c', 'user.name=FreeSpace', '-c', `user.email=${owner}@users.noreply.github.com`, 'commit', '-m', `${pkg.build.productName} ${pkg.version}: identidad de marca CertaSoft`);
   git('-c', 'credential.helper=!gh auth git-credential', 'push', 'origin', 'main');
   console.log(`Código fuente sincronizado en ${snapshot}`);
 }
 // Create a draft first: clients never see latest.yml without the matching installer.
-gh('release', 'create', tag, '--repo', repository, '--target', 'main', '--draft', '--title', `FreeSpace ${pkg.version}`, '--notes-file', 'RELEASE_NOTES.md');
+gh('release', 'create', tag, '--repo', repository, '--target', 'main', '--draft', '--title', `${pkg.build.productName} ${pkg.version}`, '--notes-file', 'RELEASE_NOTES.md');
 gh('release', 'upload', tag, '--repo', repository, ...files);
 gh('release', 'edit', tag, '--repo', repository, '--draft=false', '--latest');
 console.log(`Publicado: https://github.com/${repository}/releases/tag/${tag}`);
