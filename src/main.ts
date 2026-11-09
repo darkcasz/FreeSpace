@@ -92,6 +92,7 @@ else {
     createWindow();
     const enabled = app.isPackaged && process.platform === 'win32';
     try {
+      autoUpdater.disableDifferentialDownload = true;
       updates = new Updates(autoUpdater, app.getVersion(), enabled,
         state => { if (window && !window.isDestroyed()) window.webContents.send('update-state', state); },
         () => !!worker || maintenanceBusy);

@@ -4,7 +4,7 @@ Aplicación de escritorio en español para analizar discos y liberar espacio en 
 
 ## Instalación
 
-Instala `FreeSpace-0.3.1-Windows-x64-Setup.exe` desde GitHub Releases, cuando la publicación esté disponible. No necesitas Node.js ni comandos en el equipo de destino.
+Instala `FreeSpace-0.3.2-Windows-x64-Setup.exe` desde GitHub Releases, cuando la publicación esté disponible. No necesitas Node.js ni comandos en el equipo de destino.
 
 Las versiones 0.1 y 0.2 deben actualizarse una vez mediante este instalador para incorporar el actualizador.
 
@@ -37,11 +37,7 @@ La versión instalada para Windows consulta GitHub Releases al iniciar (después
 
 Las nuevas versiones estables se descargan en segundo plano. Una actualización verificada se instala al cerrar FreeSpace o con **Reiniciar e instalar**. Ese botón espera a que terminen el análisis y el mantenimiento. Solo se permite una instancia de FreeSpace. Los errores de conexión no impiden analizar ni limpiar; se puede reintentar. No se permiten degradaciones ni versiones preliminares.
 
-El instalador incluye `app-update.yml` y las publicaciones deben incluir los tres archivos correspondientes a la misma versión:
-
-- `FreeSpace-<version>-Windows-x64-Setup.exe`
-- `FreeSpace-<version>-Windows-x64-Setup.exe.blockmap`
-- `latest.yml`
+El instalador incluye `app-update.yml`. Las publicaciones deben contener el instalador `FreeSpace-<version>-Windows-x64-Setup.exe` y su `latest.yml` correspondiente. A partir de 0.3.2 las actualizaciones descargan el instalador completo; las versiones anteriores también publicaban `.blockmap`. La aplicación conserva la descarga e instalación automática y verifica el SHA-512 del archivo.
 
 El cliente no contiene credenciales de GitHub. El repositorio configurado debe ser público para permitir descargas sin iniciar sesión. Esta versión no configura firma digital de Windows.
 
@@ -92,3 +88,16 @@ La actualización ejecuta normalmente el desinstalador que ya estaba instalado. 
 La ventana de FreeSpace ahora se crea antes de inicializar el actualizador. Si falla la carga de la interfaz, se muestra el error y la aplicación termina, en lugar de continuar sin ventana.
 
 Se verificó la compilación de ambos programas NSIS (instalador y desinstalador), además de los tipos y las once pruebas existentes. La resolución del bloqueo reportado y la migración desde 0.3.0 deben confirmarse en Windows; no se reprodujo el equipo afectado desde macOS.
+
+
+## Recuperación 0.3.2
+
+El mensaje estándar «No se puede cerrar FreeSpace» se utiliza en varios fallos del instalador, incluidos la retirada de la versión anterior y la copia de archivos. La captura de la versión 0.3.1 no permite distinguir por sí sola esas causas. La modificación de detección de procesos en 0.3.1 no resolvió el caso reportado.
+
+La 0.3.2 instala en sitio sobre las versiones 0.1.0, 0.2.0, 0.3.0 y 0.3.1 cuando el destino coincide con la ubicación registrada de FreeSpace. Omite la ejecución de esos desinstaladores y sobrescribe los archivos de aplicación mediante un paquete ZIP. No elimina la carpeta existente ni vacía claves de desinstalación antes de instalar. Conserva la generación estándar del desinstalador de electron-builder y su validación de tamaño.
+
+El cambio se aplica sobre una copia local de las plantillas de electron-builder mediante `scripts/prepare-nsis.mjs`, `scripts/nsis-patch.ts` y `build/migrate-legacy.nsh`. No modifica las dependencias instaladas. La compilación falla si cambia la estructura esperada de la plantilla. El compilador NSIS cambia a esa copia local durante `customHeader`; esto permite mantener el flujo estándar de generación de los dos ejecutables.
+
+Se genera un registro en `%TEMP%\FreeSpace-install.log` con el inicio, la migración y la finalización. Si hay que ejecutar un desinstalador de otra versión y este falla, el mensaje indica esa etapa y el código de salida. Un problema al extraer el ZIP utiliza el diagnóstico de extracción en lugar del mensaje de cierre. La detección nativa de `FreeSpace.exe` continúa activa.
+
+Se verificaron trece pruebas, tipos, compilación de instalador/desinstalador y la integridad del paquete. La instalación sobre el equipo Windows afectado queda pendiente de confirmación; no se afirma haber reproducido ni confirmado la causa exacta del bloqueo desde macOS.

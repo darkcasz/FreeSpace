@@ -6,3 +6,5 @@ for (const name of ['main', 'preload', 'worker']) {
 }
 await build({ entryPoints: ['src/renderer.ts'], outfile: 'dist/renderer.js', bundle: true, platform: 'browser', target: 'chrome120' });
 for (const name of ['index.html', 'styles.css']) await copyFile(`src/${name}`, `dist/${name}`);
+
+await import('./prepare-nsis.mjs');
